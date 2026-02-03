@@ -17,11 +17,18 @@ Save Adapters
 from unsloth import FastLanguageModel
 import torch
 
+# TOP Unsloth Models (Copy any):
 model, tokenizer = FastLanguageModel.from_pretrained(
-    model_name = "unsloth/Llama-3.2-3B-Instruct",
+    model_name = "unsloth/Meta-Llama-3.1-8B-bnb-4bit",  # 8B Powerhouse
+    # model_name = "unsloth/gemma-2-9b-bnb-4bit",       # Gemma 9B  
+    # model_name = "unsloth/Phi-3.5-mini-instruct",     # Phi-3.5 3.8B
+    # model_name = "unsloth/Qwen2.5-7B-Instruct-bnb-4bit", # Qwen 7B
+    # model_name = "unsloth/Mistral-Small-Instruct-2409-22B-bnb-4bit", # Mistral 22B
+    
     max_seq_length = 2048,
     load_in_4bit = True,
 )
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #3-Add LoRA Layers
 
@@ -34,6 +41,7 @@ model = FastLanguageModel.get_peft_model(
     lora_dropout = 0,
     bias = "none",
 )
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #4-Prep Chat Data
 
@@ -49,6 +57,7 @@ def formatting_prompts_func(examples):
     return {"text": texts}
 
 dataset = dataset.map(formatting_prompts_func, batched = True)
+
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #5-Run QLoRA SFT
@@ -78,6 +87,7 @@ trainer = SFTTrainer(
 )
 trainer.train()
 
+
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 #6-Save Adapters
 
@@ -85,8 +95,15 @@ model.save_pretrained("finetuned_model")
 tokenizer.save_pretrained("finetuned_model")
 print("✅ Fine-tuning Complete. Model saved as 100MB adapters!")
 
---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#Test Your Model
+
+# Quick inference test
+FastLanguageModel.for_inference(model)
+inputs = tokenizer(["Hello! Tell me about AI?"], return_tensors="pt").to("cuda")
+outputs = model.generate(**inputs, max_new_tokens=64, use_cache=True)
+print(tokenizer.batch_decode(outputs)[0])
 
 
 

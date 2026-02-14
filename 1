@@ -1,2 +1,21 @@
-# FastLanguageModel: Unsloth's optimized class that loads ANY LLM with 4-bit quantization + 2x faster kernels for QLoRA training/inference.
-from unsloth import FastLanguageModel
+
+from unsloth import FastLanguageModel  # 🔥 Optimized QLoRA loader
+import torch
+
+# 💾 PICK YOUR MODEL (all work with QLoRA):
+model, tokenizer = FastLanguageModel.from_pretrained(
+    model_name = "unsloth/Meta-Llama-3.1-8B-bnb-4bit",  # 🔥 8B Powerhouse (T4 OK)
+    # model_name = "unsloth/gemma-2-9b-bnb-4bit",       # Gemma 9B (A100 rec.)
+    # model_name = "unsloth/Phi-3.5-mini-instruct",     # Phi-3.5 3.8B (T4 perfect)
+    # model_name = "unsloth/Qwen2.5-7B-Instruct-bnb-4bit", # Qwen 7B
+    # model_name = "google/flan-t5-large",              # T5 (your teacher example)
+    
+    max_seq_length = 2048,        # Max input length (balance memory/speed)
+    load_in_4bit = True,          # 🔥 4-bit quantization (70% VRAM savings)
+    dtype = None,               # Auto-detect (bfloat16 on A100, float16 on T4)
+)
+
+print("✅ STEP 2 COMPLETE: 4-bit Model Loaded! Run STEP 3 next.")
+print(f"📏 Max sequence length: {tokenizer.model_max_length}")
+
+

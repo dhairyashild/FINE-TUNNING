@@ -1,0 +1,24 @@
+
+# =============================================================================
+# #3 ADD LoRA ADAPTERS - Production Settings (CHANGE HERE for new projects)
+# =============================================================================
+
+model = FastLanguageModel.get_peft_model(
+    model,  # Your 4-bit model from STEP 2
+    
+    # 🔥 CORE LoRA SETTINGS (industry standard)
+    r = 16,                    # Rank: 16 = sweet spot (8=light, 32=heavy)
+    target_modules = [         # ALL key layers (Unsloth optimal)
+        "q_proj", "k_proj", "v_proj", "o_proj",     # Attention layers
+        "gate_proj", "up_proj", "down_proj",        # FFN/MLP layers
+    ],
+    lora_alpha = 16,           # Scaling (usually = r)
+    lora_dropout = 0,          # No dropout = faster training
+    bias = "none",             # No bias = fewer params
+    use_rslora = False,        # Standard LoRA (RSLora slightly better but complex)
+    loftq_config = None,       # Advanced (leave default)
+)
+
+# 📊 SHOW TRAINABLE PARAMETERS (should be ~0.5% total)
+model.print_trainable_parameters()
+print("✅ STEP 3 COMPLETE: LoRA Adapters Added! Run STEP 4 next.")

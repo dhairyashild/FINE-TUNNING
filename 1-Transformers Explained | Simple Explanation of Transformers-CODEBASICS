@@ -66,7 +66,12 @@ SEE 5,6,7 VIDEO OF 3 BLUE AND 1 BROWN
 
 -----------------------------------------------------------------------------
 
-
+# PRETRAINING STEPS: 
+1) Collect massive text 
+2) Choose architecture 
+3) Train tokenizer 
+4) Convert text to tokens 
+5) Feed into model to predict missing words
 
 
 

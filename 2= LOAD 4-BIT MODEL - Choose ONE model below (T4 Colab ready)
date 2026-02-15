@@ -2,6 +2,9 @@
 # =============================================================================
 # 2 LOAD 4-BIT MODEL - Choose ONE model below (T4 Colab ready)
 # =============================================================================
+#  Unsloth: Open-source library for 2x faster LLM fine-tuning with 70% less VRAM.​
+#  FastLanguageModel ( LOADER + TOKENIZER) : Unsloth's loader that loads 4-bit models + tokenizer for QLoRA training.
+#  Torch (PyTorch):  Open-source deep learning framework for building/training neural networks (GPU accelerated).
 
 
 
@@ -24,6 +27,11 @@ model, tokenizer = FastLanguageModel.from_pretrained(
 
 print("✅ STEP 2 COMPLETE: 4-bit Model Loaded! Run STEP 3 next.")
 print(f"📏 Max sequence length: {tokenizer.model_max_length}")
+
+
+
+
+
 
 
 ##################################################################################################

@@ -1,0 +1,120 @@
+# =============================================================================
+# 🔍 ALL 6 TYPES WITH 10% TEST SPLIT (Copy-paste ready just pick below code according to dataset)
+# =============================================================================
+
+from datasets import load_dataset
+from unsloth.chat_templates import get_chat_template
+
+
+
+
+
+
+
+
+
+
+# # -----------------------------------------------------------------------------
+# # 🔥 #1 CLASSIFICATION (IMDB)
+# # -----------------------------------------------------------------------------
+
+
+# dataset = load_dataset("imdb", split="train[:10%]")
+# dataset = dataset.map(lambda x: {"text": f"classify sentiment: {x['text']} → {'POSITIVE' if x['label']==1 else 'NEGATIVE'}"})
+# dataset = dataset.train_test_split(test_size=0.1)
+# print(f"#1 ✅ Train: {len(dataset['train'])} Test: {len(dataset['test'])}")
+
+
+
+
+
+# # -----------------------------------------------------------------------------
+# # ⚡ #2 INSTRUCTION (Alpaca)
+# # -----------------------------------------------------------------------------
+
+
+
+
+# dataset = load_dataset("yahma/alpaca-cleaned", split="train[:10%]")
+# dataset = dataset.map(lambda x: {"text": f"### Instruction:\n{x['instruction']}\n### Response:\n{x['output']}"})
+# dataset = dataset.train_test_split(test_size=0.1)
+# print(f"#2 ✅ Train: {len(dataset['train'])} Test: {len(dataset['test'])}")
+
+
+
+
+
+
+# # -----------------------------------------------------------------------------
+# # 🗣️ #3 CHATML (FineTome)
+# # -----------------------------------------------------------------------------
+
+
+
+
+# dataset = load_dataset("mlabonne/FineTome-100k", split="train[:10%]")
+# tokenizer = get_chat_template(tokenizer, "llama-3.1")
+# dataset = dataset.map(lambda x: {"text": tokenizer.apply_chat_template(x["conversations"], tokenize=False)})
+# dataset = dataset.train_test_split(test_size=0.1)
+# print(f"#3 ✅ Train: {len(dataset['train'])} Test: {len(dataset['test'])}")
+
+
+
+
+
+
+# # -----------------------------------------------------------------------------
+# # ❓ #4 QA (SQuAD)
+# # -----------------------------------------------------------------------------
+
+
+
+
+
+# dataset = load_dataset("squad", split="train[:10%]")
+# dataset = dataset.map(lambda x: {"text": f"Q: {x['question']}\nA: {x['answers']['text'][0] if x['answers']['text'] else 'Unknown'}"})
+# dataset = dataset.train_test_split(test_size=0.1)
+# print(f"#4 ✅ Train: {len(dataset['train'])} Test: {len(dataset['test'])}")
+
+
+
+
+
+
+# # -----------------------------------------------------------------------------
+# # 📚 #5 RAW TEXT (Wiki)
+# # -----------------------------------------------------------------------------
+
+
+
+
+
+# dataset = load_dataset("wikitext", "wikitext-2-raw-v1", split="train[:10%]")
+# dataset = dataset.filter(lambda x: len(x["text"]) > 50)
+# # For raw text, we need to create text field
+# dataset = dataset.map(lambda x: {"text": x["text"]})
+# dataset = dataset.train_test_split(test_size=0.1)
+# print(f"#5 ✅ Train: {len(dataset['train'])} Test: {len(dataset['test'])}")
+
+
+
+
+
+
+
+# # -----------------------------------------------------------------------------
+# # 💻 #6 CODE (CodeParrot)
+# # -----------------------------------------------------------------------------
+
+
+
+# dataset = load_dataset("codeparrot/github-code", split="train[:10%]", streaming=True)
+# # For code, collect a sample since streaming
+# dataset = dataset.take(1000)  # Get 1000 examples
+# dataset = [{"text": f"Language: {x.get('language', 'python')}\nCode:\n###\n{x['code']}\n###"} for x in dataset]
+# from datasets import Dataset
+# dataset = Dataset.from_list(dataset)
+# dataset = dataset.train_test_split(test_size=0.1)
+# print(f"#6 ✅ Train: {len(dataset['train'])} Test: {len(dataset['test'])}")
+
+

@@ -31,3 +31,16 @@ else:
     print("⚠️  No GPU - use Colab T4/A100")
 
 print("🚀 STEP 0 COMPLETE → PROCEED TO STEP 1!")
+
+
+########################         USE ABOVE CDE OR BELOW COMMAND FOR FAST SET UP BOTH WORK SAME   ############################################################################
+
+
+#1)      os.system('pip install -q "unsloth[colab-new]@git+https://github.com/unslothai/unsloth.git" trl>=0.8.0 datasets>=2.18.0 transformers>=4.40.0 accelerate>=0.27.0 peft>=0.10.0')
+
+#2) RESTART SESSION  NEED BECAUSE ==     unsloth[colab-new] modifies CUDA kernels
+#   Torch must reload fresh environment                     #    Skip = 100% Dynamo crashes (your earlier error)
+
+
+
+

@@ -22,3 +22,54 @@ model = FastLanguageModel.get_peft_model(
 # 📊 SHOW TRAINABLE PARAMETERS (should be ~0.5% total)
 model.print_trainable_parameters()
 print("✅ STEP 3 COMPLETE: LoRA Adapters Added! Run STEP 4 next.")
+
+
+###########################################################################
+
+#   .get_peft_model() = A function that TAKES a base model and RETURNS a new  PEFT model with LoRA adapters injected.
+
+#  ADAPTER = Tiny trainable matrices injected into frozen model layers   (SEE BELOW GENERAL EXAMPLE)
+# • Original model = Textbook (all knowledge frozen)
+# • ADAPTERS = Sticky notes added to specific pages
+# • Training = Only writing on sticky notes (textbook unchanged)
+
+
+ r = 16,                    # RANK = Size of tiny adapter matrices (16 numbers wide)
+                              # • 8 = light (faster, less learning capacity)
+                              # • 16 = sweet spot (balanced - most used)
+                              # • 32 = heavy (more learning, more memory)
+
+Matrix = [5 × 3]       =   [ROW * COLUMNS ]
+1 1 1 
+1 1 1 
+1 1 1 
+1 1 1
+1 1 1 
+
+
+
+# Transformer Architecture Module Definitions
+### Attention Mechanism (The "Brain" of Context)
+- q_proj (Query): The "Question." It defines what the current word is looking for in other words.
+- k_proj (Key): The "Label." It defines what information this word contains for others to find.
+- v_proj (Value): The "Content." The actual data that gets passed along once a match is found.
+- o_proj (Output): The "Mixer." It takes the weighted values from all words and blends them into a single result.
+### MLP / Feed-Forward Block (The "Knowledge" Filter)
+- gate_proj (Gate): The "Filter." It decides which pieces of information are important enough to keep moving forward.
+- up_proj (Up): The "Expander." It moves the data into a much larger space (higher dimensions) to find complex patterns.
+- down_proj (Down): The "Summarizer." It shrinks that complex data back down to the original size so the next layer can read it.
+
+
+
+
+# LoRA Configuration: Values and Use Cases
+
+| Parameter | Type | Standard Value | Simple Use Case |
+| :--- | :--- | :--- | :--- |
+| lora_alpha | Variable | 16, 32, or 64 | Scaling: If the model is too "weak" and ignores your data, increase this. Usually set to match your Rank (r). |
+| lora_dropout | Variable | 0 to 0.1 | Regularization: Use 0 for maximum speed. Use 0.1 if the model is just memorizing your training data instead of learning. |
+| bias | Fixed | "none" | Efficiency: Standard for LoRA. "none" ensures only the adapter weights are trained, keeping the file size small. |
+| use_rslora | Fixed | False | Stability: Rank-Stabilized LoRA. Keep False unless you are using a very high Rank (e.g., r=128+) and want more stable math. |
+| loftq_config | Fixed | None | Initialization: Leave as None. Only used if you want to apply a special "LoftQ" math trick when first loading a model. |
+
+

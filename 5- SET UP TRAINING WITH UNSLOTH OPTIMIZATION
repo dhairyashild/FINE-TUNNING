@@ -1,28 +1,94 @@
 # =============================================================================
-# ✅ BEST PRACTICE: MINIMAL + BULLETPROOF (Works EVERYWHERE)
+# ✅ STEP 5: TRAINING CONFIGURATION (Choose your path)
+# =============================================================================
+# FIRST try STANDARD version. If it crashes, use DEBUG version below.
 # =============================================================================
 
 from trl import SFTTrainer
-from transformers import TrainingArguments
+from transformers import TrainingArguments, DataCollatorForSeq2Seq
+import os
 
-# 🔥 INDUSTRY STANDARD CONFIG (T4/A100/RTX ready)
+# =============================================================================
+# 🚀 OPTION 1: STANDARD (Optimized - 2x faster) - USE THIS FIRST
+# =============================================================================
+"""
+# Uncomment to use STANDARD version
+os.environ["UNSLOTH_DISABLE_FUSED_CROSS_ENTROPY"] = "0"  # Keep optimizations ON
+
 training_args = TrainingArguments(
     output_dir="./imdb-qlora",
-    per_device_train_batch_size=2,
-    gradient_accumulation_steps=4,    # Effective batch=8
+    per_device_train_batch_size=1,
+    gradient_accumulation_steps=8,
     warmup_steps=10,
-    max_steps=60,                     # 5-7 min demo
+    max_steps=60,
     learning_rate=2e-4,
-    fp16=not torch.cuda.is_bf16_supported(),  # Auto-detect
-    bf16=torch.cuda.is_bf16_supported(),      # A100 support
+    fp16=True,
     logging_steps=5,
     save_steps=30,
-    report_to="none",                 # No wandb
-    # NO evaluation_strategy = NO ERRORS
+    report_to="none",
+    dataloader_num_workers=4,              # ✅ Parallel loading (faster)
+    remove_unused_columns=False,
 )
 
-# 🔥 CRITICAL: Unsloth training mode
-model = FastLanguageModel.for_training(model)
+data_collator = DataCollatorForSeq2Seq(    # ✅ Handles padding
+    tokenizer=tokenizer,
+    model=model,
+    padding=True,
+)
+
+model = FastLanguageModel.for_training(model)  # ✅ Unsloth speed boost
+
+trainer = SFTTrainer(
+    model=model,
+    tokenizer=tokenizer,
+    train_dataset=dataset['train'],
+    args=training_args,
+    data_collator=data_collator,
+    dataset_text_field="text",
+    max_seq_length=512,
+    packing=True,                           # ✅ Efficient sequence packing
+)
+
+print("✅ STANDARD MODE: Optimized for speed")
+"""
+
+
+
+
+
+
+
+
+
+
+
+# =============================================================================
+# 🛠️ OPTION 2: DEBUG (Safe mode - Use if STANDARD crashes)
+# =============================================================================
+
+# Uncomment this section if STANDARD version fails
+"""
+os.environ["UNSLOTH_DISABLE_FUSED_CROSS_ENTROPY"] = "1"  # Disable problematic feature
+
+training_args = TrainingArguments(
+    output_dir="./imdb-qlora",
+    per_device_train_batch_size=1,
+    gradient_accumulation_steps=8,
+    warmup_steps=10,
+    max_steps=60,
+    learning_rate=2e-4,
+    fp16=True,
+    logging_steps=5,
+    save_steps=30,
+    report_to="none",
+    dataloader_num_workers=0,              # ❌ No multiprocessing (slower but safe)
+    remove_unused_columns=False,
+)
+
+# Skip data_collator - let SFTTrainer handle it
+
+# ❌ Skip Unsloth training mode (causes Dynamo crash)
+# model = FastLanguageModel.for_training(model)  # Commented out
 
 trainer = SFTTrainer(
     model=model,
@@ -31,7 +97,17 @@ trainer = SFTTrainer(
     args=training_args,
     dataset_text_field="text",
     max_seq_length=512,
+    packing=False,                          # ❌ No packing (simpler)
 )
 
-print("✅ STANDARD QLoRA READY!")
-print("🚀 RUN: trainer.train()")
+print("✅ DEBUG MODE: Safe but slower")
+"""
+
+# =============================================================================
+# 📋 INSTRUCTIONS:
+# 1. FIRST run STANDARD (uncomment Option 1, keep Option 2 commented)
+# 2. If STANDARD crashes with Dynamo error → switch to DEBUG
+# 3. Run trainer.train() after uncommenting your chosen option
+# =============================================================================
+
+print("\n🚀 Uncomment ONE option above, then run: trainer.train()")
